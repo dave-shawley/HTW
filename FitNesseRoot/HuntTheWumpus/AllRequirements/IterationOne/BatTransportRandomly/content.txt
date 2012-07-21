@@ -14,21 +14,20 @@ use a tiny cross map
 |4|2|S|
 |2|5|S|
 
+!style_pageHelp(Hint: implement the following in a fixture named !style_code[BatTransportRandomly])
+
 Puts the bats in cavern 2, and then repeats the following 1000 times.
  1 put player in cavern 1
  2 move east
  3 count the cavern the player winds up in.
 
-!style_red(What should these numbers be??)
-
 |Check random bat transport|
 |cavern|count?|
-|1|>1000|
-|2|>1000|
-|3|>1000|
-|4|>1000|
-|5|>1000|
-
+|1|0<=_<1000|
+|2|0|
+|3|0<=_<1000|
+|4|0<=_<1000|
+|5|0<=_<1000|
 
 
 

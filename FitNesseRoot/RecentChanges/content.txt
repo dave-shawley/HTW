@@ -1,4 +1,5 @@
-|HuntTheWumpus.SetUp||19:11:39 Sat, Mar 13, 2010|
+|HuntTheWumpus.AllRequirements.IterationOne.BatTransportRandomly||09:45:25 Sat, Jul 21, 2012|
+|HuntTheWumpus.SetUp||09:44:05 Sat, Jul 21, 2012|
 |HuntTheWumpus.AllRequirements.IterationThree.WumpusTrap.FindWumpusTrap||19:10:25 Sat, Mar 13, 2010|
 |HuntTheWumpus||19:08:51 Sat, Mar 13, 2010|
 |FrontPage||19:03:48 Sat, Mar 13, 2010|

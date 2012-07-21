@@ -1,5 +1,5 @@
 !|Import|
-|HuntTheWumpus.fixtures|
+|huntthewumpus.fixtures|
 
 ![
 Library
