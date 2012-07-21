@@ -14,7 +14,7 @@ use a tiny cross map
 |4|2|S|
 |2|5|S|
 
-!style_pageHelp(Hint: implement the following in a fixture named !style_code[BatTransportRandomly])
+!style_pageHelp(Hint: implement the following in a fixture named !style_code[CheckRandomBatTransport])
 
 Puts the bats in cavern 2, and then repeats the following 1000 times.
  1 put player in cavern 1
