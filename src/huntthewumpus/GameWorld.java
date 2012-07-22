@@ -22,11 +22,33 @@ public class GameWorld {
 		endRoom.setPeer(passageDirection.reverse(), startRoom);
 	}
 
-	public void movePlayer(Direction direction) {
+	public void movePlayer(Direction direction) throws GameOver, InvalidMove {
 		Room currentLocation = whereIsPlayer();
 		Room nextRoom = currentLocation.getPeer(direction);
 
-		while ("bats".equalsIgnoreCase(nextRoom.getContents())) {
+		if (nextRoom == null) {
+			throw new InvalidMove(direction);
+		}
+		nextRoom = handleBatsInRoom(nextRoom);
+
+		if (nextRoom.getContents() == RoomObject.pit) {
+			throw new GameOver("You fall into a pit and die.");
+		}
+
+		if (nextRoom != currentLocation) {
+			nextRoom.setContents(RoomObject.player);
+			currentLocation.clearContents();
+		}
+	}
+
+	/**
+	 * Keep moving the player until in a room without bats.
+	 *
+	 * @param nextRoom  the room that the player is moving into
+	 * @return the final room that the player ends up in
+	 */
+	private Room handleBatsInRoom(Room nextRoom) {
+		while (nextRoom.getContents() == RoomObject.bats) {
 			int randomRoomIndex = (int) (Math.random() * rooms.size());
 			for (Room r: rooms.values()) {
 				nextRoom = r;
@@ -35,16 +57,16 @@ public class GameWorld {
 				}
 			}
 		}
-
-		if (nextRoom != currentLocation) {
-			setPlayerLocation(nextRoom);
-			currentLocation.setContents(null);
-		}
+		return nextRoom;
 	}
 
+	/**
+	 * @return the room that the player is currently in
+	 * @throws PlayerNotFound if the map does not contain a player
+	 */
 	public Room whereIsPlayer() {
 		for (Room r: rooms.values()) {
-			if ("player".equals(r.getContents())) {
+			if (r.getContents() == RoomObject.player) {
 				return r;
 			}
 		}
@@ -52,11 +74,21 @@ public class GameWorld {
 	}
 
 	public void setPlayerLocation(Room room) {
-		room.setContents("player");
+		try {
+			Room currentLocation = whereIsPlayer();
+			currentLocation.clearContents();
+		} catch (PlayerNotFound e) {
+			// ignore this
+		}
+		room.setContents(RoomObject.player);
 	}
 
 	public void addBatsInCavern(Room room) {
-		room.setContents("bats");
+		room.setContents(RoomObject.bats);
+	}
+
+	public void addPitInCavern(Room room) {
+		room.setContents(RoomObject.pit);
 	}
 
 }

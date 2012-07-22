@@ -13,4 +13,15 @@ public enum Direction {
 		throw new RuntimeException(this.toString() + " is an illegal Direction");
 	}
 
+	public String longName() {
+		switch (this) {
+		case E: return "east";
+		case W: return "west";
+		case N: return "north";
+		case S: return "south";
+		}
+		throw new RuntimeException(this.toString() + " is an illegal Direction");
+	}
+
 }
+

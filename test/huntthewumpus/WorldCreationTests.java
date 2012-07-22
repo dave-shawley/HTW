@@ -1,6 +1,5 @@
 package huntthewumpus;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -28,8 +27,8 @@ public class WorldCreationTests {
 	@Test
 	public void roomHasContents() {
 		Room r = world.getRoom(1);
-		r.setContents("player");
-		assertThat(r.getContents(), is(equalTo("player")));
+		r.setContents(RoomObject.player);
+		assertThat(r.getContents(), is(RoomObject.player));
 	}
 
 	@Test

@@ -42,4 +42,18 @@ public class RoomTest {
 		Room r = new Room(42);
 		assertThat(r.toString().contains(String.valueOf(r.getRoomNumber())), is(true));
 	}
+
+	@Test
+	public void roomHasContents() {
+		Room r = new Room(42);
+		r.setContents(RoomObject.player);
+		assertThat(r.getContents(), is(RoomObject.player));
+	}
+
+	@Test
+	public void roomIsEmptyByDefault() {
+		Room r = new Room(42);
+		assertThat(r.getContents(), is(RoomObject.empty));
+	}
+
 }

@@ -1,4 +1,12 @@
 !3 When the player is adjacent to a cavern with bats, he should hear chirping sounds.
 
-|tbd|
+|Make map.|
+|start|end|direction|
+|1|2|E|
+|2|3|E|
 
+!|script|
+|put|player|in cavern|1|
+|put|bats|in cavern|3|
+|enter command|E|
+|check|message was printed|You hear chirping.|true|

@@ -20,35 +20,35 @@ public class GamePlayTests {
 
 
 	@Test
-	public void movePlayerEast() {
+	public void movePlayerEast() throws Exception {
 		world.setPlayerLocation(world.getRoom(CENTER_ROOM));
 		world.movePlayer(Direction.E);
 		assertThat(world.whereIsPlayer(), is(sameInstance(world.getRoom(EAST_ROOM))));
 	}
 
 	@Test
-	public void movePlayerWest() {
+	public void movePlayerWest() throws Exception {
 		world.setPlayerLocation(world.getRoom(CENTER_ROOM));
 		world.movePlayer(Direction.W);
 		assertThat(world.whereIsPlayer(), is(sameInstance(world.getRoom(WEST_ROOM))));
 	}
 
 	@Test
-	public void movePlayerNorth() {
+	public void movePlayerNorth() throws Exception {
 		world.setPlayerLocation(world.getRoom(CENTER_ROOM));
 		world.movePlayer(Direction.N);
 		assertThat(world.whereIsPlayer(), is(sameInstance(world.getRoom(NORTH_ROOM))));
 	}
 
 	@Test
-	public void movePlayerSouth() {
+	public void movePlayerSouth() throws Exception {
 		world.setPlayerLocation(world.getRoom(CENTER_ROOM));
 		world.movePlayer(Direction.S);
 		assertThat(world.whereIsPlayer(), is(sameInstance(world.getRoom(SOUTH_ROOM))));
 	}
 
 	@Test
-	public void playerCannotMoveIntoRoomWithBats() {
+	public void playerCannotMoveIntoRoomWithBats() throws Exception {
 		world.setPlayerLocation(world.getRoom(CENTER_ROOM));
 		world.addBatsInCavern(world.getRoom(EAST_ROOM));
 		world.movePlayer(Direction.E);

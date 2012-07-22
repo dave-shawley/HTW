@@ -1,4 +1,5 @@
 |script|
+|put|player|in cavern|0|
 |reject|enter command|zorch|
 |ensure|message|I don't know how to zorch.|was printed|
 ||

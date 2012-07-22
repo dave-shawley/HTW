@@ -1,5 +1,6 @@
 package huntthewumpus;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -15,4 +16,16 @@ public class DirectionTest {
 		assertThat(Direction.N.reverse(), is(Direction.S));
 	}
 
+	@Test
+	public void directionsHaveLongNames() {
+		assertThat(Direction.E.longName(), is(equalTo("east")));
+		assertThat(Direction.W.longName(), is(equalTo("west")));
+		assertThat(Direction.S.longName(), is(equalTo("south")));
+		assertThat(Direction.N.longName(), is(equalTo("north")));
+	}
+
+	@Test
+	public void coverageTests() {
+		TestHelper.testEnumerationMethods(Direction.class);
+	}
 }

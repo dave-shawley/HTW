@@ -6,13 +6,13 @@ import java.util.Map;
 public class Room {
 	private final int roomNumber;
 	private final Map<Direction, Room> peerMap;
-	private String content;
+	private RoomObject content;
 
 
 	public Room(int roomNumber) {
 		this.roomNumber = roomNumber;
 		this.peerMap = new HashMap<Direction, Room>();
-		this.content = null;
+		this.content = RoomObject.empty;
 	}
 
 	public int getRoomNumber() {
@@ -27,11 +27,15 @@ public class Room {
 		return peerMap.get(passageDirection);
 	}
 
-	public void setContents(String contents) {
-		this.content = contents;
+	public void setContents(RoomObject object) {
+		this.content = object;
 	}
 
-	public String getContents() {
+	public void clearContents() {
+		content = RoomObject.empty;
+	}
+
+	public RoomObject getContents() {
 		return content;
 	}
 
@@ -39,7 +43,8 @@ public class Room {
 	public String toString() {
 		return (new StringBuffer(""))
 				.append(getClass().getCanonicalName()).append("(")
-				.append("roomNumber=").append(getRoomNumber())
+				.append("roomNumber=").append(getRoomNumber()).append(", ")
+				.append("content=").append(getContents())
 				.append(")").toString();
 	}
 }
