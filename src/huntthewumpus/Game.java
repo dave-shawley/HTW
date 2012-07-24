@@ -1,6 +1,11 @@
 package huntthewumpus;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Game {
+	private final static Direction[] ORDERING = { Direction.N, Direction.S, Direction.E, Direction.W };
+
 	private final GameWorld world;
 	private final GameDisplay display;
 	private final CommandGenerator generator;
@@ -38,16 +43,11 @@ public class Game {
 			case MOVE_SOUTH:
 				world.movePlayer(Direction.S);
 				break;
-//			case REST:
-//				// nothing to do here.
-//				break;
 			}
 
 			Room currentLocation = world.whereIsPlayer();
-			processSoundsFromAdjacentRoom(currentLocation.getPeer(Direction.N));
-			processSoundsFromAdjacentRoom(currentLocation.getPeer(Direction.S));
-			processSoundsFromAdjacentRoom(currentLocation.getPeer(Direction.E));
-			processSoundsFromAdjacentRoom(currentLocation.getPeer(Direction.W));
+			printSounds(currentLocation);
+			printDirections(currentLocation);
 
 		} catch (GameEvent event) {
 			display.showOutput(event.getGameMessage());
@@ -62,20 +62,45 @@ public class Game {
 		return true;
 	}
 
-	private void processSoundsFromAdjacentRoom(Room r) {
-		if (r == null) {
-			return;
-		}
-		if (r.getContents() == RoomObject.bats) {
-			display.showOutput("You hear chirping.");
-		}
-		if (r.getContents() == RoomObject.pit) {
-			display.showOutput("You hear wind.");
+	public boolean hasTerminated() {
+		return !gameIsRunning;
+	}
+
+	private void printSounds(Room r) {
+		for (Direction d: ORDERING) {
+			Room peer = r.getPeer(d);
+			if (peer != null) {
+				if (peer.getContents() == RoomObject.bats) {
+					display.showOutput("You hear chirping.");
+				}
+				if (peer.getContents() == RoomObject.pit) {
+					display.showOutput("You hear wind.");
+				}
+			}
 		}
 	}
 
-	public boolean hasTerminated() {
-		return !gameIsRunning;
+	private void printDirections(Room r) {
+		List<String> directions = new ArrayList<String>(4);
+
+		for (Direction dir: ORDERING) {
+			if (r.getPeer(dir) != null) {
+				directions.add(dir.longName());
+			}
+		}
+
+		if (!directions.isEmpty()) {
+			StringBuilder sb = new StringBuilder("You can go ");
+			sb.append(directions.remove(0));
+			while (directions.size() > 1) {
+				sb.append(", ").append(directions.remove(0));
+			}
+			if (!directions.isEmpty()) {
+				sb.append(" and ").append(directions.remove(0));
+			}
+			sb.append(" from here.");
+			display.showOutput(sb.toString());
+		}
 	}
 
 }

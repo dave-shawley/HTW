@@ -151,6 +151,30 @@ public class GameTest {
 		assertThat(g.display.getOutputLine(0),
 				is(equalTo(String.format("I don't know how to %s.", randomInputValue))));
 	}
+
+	@Test
+	public void directionsAreReportedAfterResting() {
+		GameBundle g = new GameBundle();
+		g.doCommand("rest");
+		assertThat(g.display.getDisplayedOutput().isEmpty(), is(true));
+
+		g.world.connectRooms(g.world.getRoom(0), Direction.N, g.world.getRoom(1));
+		g.doCommand("rest");
+		assertThat(g.display.popDisplayedOutput(), is(equalTo("You can go north from here.")));
+
+		g.world.connectRooms(g.world.getRoom(0), Direction.E, g.world.getRoom(2));
+		g.doCommand("rest");
+		assertThat(g.display.popDisplayedOutput(), is(equalTo("You can go north and east from here.")));
+
+		g.world.connectRooms(g.world.getRoom(0), Direction.S, g.world.getRoom(3));
+		g.doCommand("rest");
+		assertThat(g.display.popDisplayedOutput(), is(equalTo("You can go north, south and east from here.")));
+
+		g.world.connectRooms(g.world.getRoom(0), Direction.W, g.world.getRoom(4));
+		g.doCommand("rest");
+		assertThat(g.display.popDisplayedOutput(), is(equalTo("You can go north, south, east and west from here.")));
+	}
+
 }
 
 
@@ -177,6 +201,11 @@ class GameBundle extends Game {
 
 	public GameBundle() {
 		this(0, new GameWorld(), new ProgrammableGenerator(), new RecordingGameDisplay());
+	}
+
+	public boolean doCommand(String cmd) {
+		generator.addCommand(cmd);
+		return this.tick();
 	}
 
 	/**

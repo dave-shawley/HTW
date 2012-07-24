@@ -31,6 +31,10 @@ public class RecordingGameDisplay implements GameDisplay {
 		return outputList.get(lineNo);
 	}
 
+	public void clearOutput() {
+		outputList.clear();
+	}
+
 	private void verifyThatOutputWasRecorded() {
 		if (outputList.isEmpty()) {
 			throw new RuntimeException("no output was recorded");

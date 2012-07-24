@@ -7,10 +7,10 @@ import huntthewumpus.GameWorld;
 public class GameDriver {
 	private static GameDriver CURRENT_DRIVER;
 
-	private final Game game;
-	private final RecordingGameDisplay display;
-	private final ProgrammableGenerator generator;
-	private final GameWorld world;
+	private Game game;
+	private RecordingGameDisplay display;
+	private ProgrammableGenerator generator;
+	private GameWorld world;
 
 	public static GameWorld getWorld() {
 		return CURRENT_DRIVER.world;
@@ -23,10 +23,7 @@ public class GameDriver {
 
 	public GameDriver() {
 		CURRENT_DRIVER = this;
-		display = new RecordingGameDisplay();
-		world = new GameWorld();
-		generator = new ProgrammableGenerator();
-		game = new Game(world, display, generator);
+		clearMap();
 	}
 
 	public void putInCavern(String gameObject, int cavernNumber) {
@@ -40,6 +37,7 @@ public class GameDriver {
 	}
 
 	public boolean enterCommand(String command) {
+		display.clearOutput();
 		try {
 			generator.addCommand(command);
 			return game.tick();
@@ -57,11 +55,23 @@ public class GameDriver {
 	}
 
 	public boolean messageWasPrinted(String message) {
-		return message.equalsIgnoreCase(display.popDisplayedOutput());
+		boolean foundMessage = false;
+		for (String outputLine: display.getDisplayedOutput()) {
+			foundMessage = foundMessage || outputLine.equalsIgnoreCase(message);
+		}
+		return foundMessage;
 	}
 
 	public boolean gameTerminated() {
 		return game.hasTerminated();
 	}
+
+	public void clearMap() {
+		display = new RecordingGameDisplay();
+		world = new GameWorld();
+		generator = new ProgrammableGenerator();
+		game = new Game(world, display, generator);
+	}
+
 }
 
