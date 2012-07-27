@@ -1,8 +1,10 @@
 package huntthewumpus;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -50,14 +52,26 @@ public class GameWorldTest {
 	}
 
 	@Test
+	public void gameWorldTracksWumpusLocation() {
+		world.setPlayerLocation(northRoom);
+		world.setWumpusLocation(southRoom);
+		assertThat(world.whereIsWumpus(), is(sameInstance(southRoom)));
+	}
+
+	@Test
+	public void whereIsWumpusReturnsNullWithoutWumpus() {
+		assertThat(world.whereIsWumpus(), is(nullValue()));
+	}
+
+	@Test
 	public void getRoomAssignsRoomNumber() {
 		Room r = world.getRoom(42);
 		assertThat(r.getRoomNumber(), is(42));
 	}
 
 	@Test(expected=PlayerNotFound.class)
-	public void gameWorldFailsWithoutPlayer() {
-		world.whereIsPlayer();
+	public void movePlayerFailsWithoutPlayer() throws Exception {
+		world.movePlayer(Direction.E);
 	}
 
 	@Test(expected=GameOver.class)
@@ -105,6 +119,46 @@ public class GameWorldTest {
 		world.setPlayerLocation(playerRoom);
 		world.addBatsInCavern(batsRoom);
 		world.movePlayer(Direction.S);
-		assertThat(world.whereIsPlayer(), is(sameInstance(playerRoom)));
+
+
+		Room newLocation = world.whereIsPlayer();
+		assertThat(newLocation, is(sameInstance(playerRoom)));
+		assertThat(newLocation.getContents(), is(RoomObject.player));
 	}
+
+	@Test
+	public void moveWumpusChoosesNewLocation() {
+		GameWorld world = new GameWorld();
+		Room wumpusRoom = world.getRoom(0);
+		world.connectRooms(wumpusRoom, Direction.E, world.getRoom(1));
+		world.setWumpusLocation(wumpusRoom);
+		world.moveWumpus();
+
+		Room newLocation = world.whereIsWumpus();
+		assertThat(newLocation, is(sameInstance(world.getRoom(1))));
+		assertThat(newLocation.getContents(), is(RoomObject.wumpus));
+	}
+
+	@Test
+	public void moveWumpusChoosesNewLocationAtRandom() {
+		int[] counters = new int[6];
+		for (int i=0; i<100; ++i) {
+			world.setWumpusLocation(world.getRoom(2));
+			assertThat(world.whereIsWumpus().getRoomNumber(), is(2));
+			world.moveWumpus();
+
+			Room newLocation = world.whereIsWumpus();
+			counters[newLocation.getRoomNumber()]++;
+		}
+		for (int i=1; i<counters.length; ++i) {
+			if (i != 2 && counters[i] == 0) {
+				for (int j=0; j<counters.length; ++j) {
+					System.err.print(" " + String.valueOf(counters[j]));
+				}
+				System.err.println();
+				fail(String.format("counter[%d] is zero", i));
+			}
+		}
+	}
+
 }

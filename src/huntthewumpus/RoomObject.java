@@ -1,5 +1,5 @@
 package huntthewumpus;
 
 public enum RoomObject {
-	player, bats, empty, pit
+	player, bats, empty, pit, wumpus
 }

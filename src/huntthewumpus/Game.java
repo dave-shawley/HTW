@@ -10,6 +10,7 @@ public class Game {
 	private final GameDisplay display;
 	private final CommandGenerator generator;
 	private boolean gameIsRunning;
+	private boolean wumpusIsFrozen;
 
 	public Game(GameWorld world, GameDisplay display, CommandGenerator commandStream) {
 		if (world == null) {
@@ -23,6 +24,7 @@ public class Game {
 		}
 
 		this.gameIsRunning = true;
+		this.wumpusIsFrozen = false;
 		this.world = world;
 		this.display = display;
 		this.generator = commandStream;
@@ -45,10 +47,14 @@ public class Game {
 				break;
 			}
 
-			Room currentLocation = world.whereIsPlayer();
-			printSounds(currentLocation);
-			printDirections(currentLocation);
+			tickWumpus();
 
+			Room currentLocation = world.whereIsPlayer();
+			if (currentLocation != null) {
+				printSounds(currentLocation);
+				printSmells(currentLocation);
+				printDirections(currentLocation);
+			}
 		} catch (GameEvent event) {
 			display.showOutput(event.getGameMessage());
 			if (event.shouldGameTerminate()) {
@@ -66,6 +72,24 @@ public class Game {
 		return !gameIsRunning;
 	}
 
+	public void freezeWumpus() {
+		wumpusIsFrozen = true;
+	}
+
+	public void thawWumpus() {
+		wumpusIsFrozen = false;
+	}
+
+	protected void tickWumpus() {
+		if (!wumpusIsFrozen && (Math.random() * 10.0) > 2.0) {
+			world.moveWumpus();
+		}
+	}
+
+	protected boolean isWumpusFrozen() {
+		return wumpusIsFrozen;
+	}
+
 	private void printSounds(Room r) {
 		for (Direction d: ORDERING) {
 			Room peer = r.getPeer(d);
@@ -75,6 +99,17 @@ public class Game {
 				}
 				if (peer.getContents() == RoomObject.pit) {
 					display.showOutput("You hear wind.");
+				}
+			}
+		}
+	}
+
+	private void printSmells(Room r) {
+		for (Direction d: ORDERING) {
+			Room peer = r.getPeer(d);
+			if (peer != null) {
+				if (peer.getContents() == RoomObject.wumpus) {
+					display.showOutput("You smell the Wumpus.");
 				}
 			}
 		}

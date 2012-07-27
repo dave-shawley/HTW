@@ -35,6 +35,15 @@ public class RecordingGameDisplay implements GameDisplay {
 		outputList.clear();
 	}
 
+	public boolean lineWasDisplayed(String line) {
+		for (String s: outputList) {
+			if (s.equalsIgnoreCase(line)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void verifyThatOutputWasRecorded() {
 		if (outputList.isEmpty()) {
 			throw new RuntimeException("no output was recorded");

@@ -24,6 +24,9 @@ public class GameWorld {
 
 	public void movePlayer(Direction direction) throws GameOver, InvalidMove {
 		Room currentLocation = whereIsPlayer();
+		if (currentLocation == null) {
+			throw new PlayerNotFound();
+		}
 		Room nextRoom = currentLocation.getPeer(direction);
 
 		if (nextRoom == null) {
@@ -48,7 +51,20 @@ public class GameWorld {
 	 * @return the final room that the player ends up in
 	 */
 	private Room handleBatsInRoom(Room nextRoom) {
-		while (nextRoom.getContents() == RoomObject.bats) {
+		if (nextRoom.getContents() == RoomObject.bats) {
+			nextRoom = getRandomRoomNotContaining(RoomObject.bats);
+		}
+		return nextRoom;
+	}
+
+	/**
+	 * Find a room that does not contain a certain object.
+	 * @param objectToExclude  skip rooms with this object
+	 * @return a random room that does not contain {@code objectToExclude}
+	 */
+	private Room getRandomRoomNotContaining(RoomObject objectToExclude) {
+		Room nextRoom = null;
+		do {
 			int randomRoomIndex = (int) (Math.random() * rooms.size());
 			for (Room r: rooms.values()) {
 				nextRoom = r;
@@ -56,13 +72,13 @@ public class GameWorld {
 					break;
 				}
 			}
-		}
+		} while (nextRoom.getContents() == objectToExclude);
+
 		return nextRoom;
 	}
 
 	/**
-	 * @return the room that the player is currently in
-	 * @throws PlayerNotFound if the map does not contain a player
+	 * @return the room that the player is currently in, <code>null</code> if player not found
 	 */
 	public Room whereIsPlayer() {
 		for (Room r: rooms.values()) {
@@ -70,15 +86,13 @@ public class GameWorld {
 				return r;
 			}
 		}
-		throw new PlayerNotFound();
+		return null;
 	}
 
 	public void setPlayerLocation(Room room) {
-		try {
-			Room currentLocation = whereIsPlayer();
+		Room currentLocation = whereIsPlayer();
+		if (currentLocation != null) {
 			currentLocation.clearContents();
-		} catch (PlayerNotFound e) {
-			// ignore this
 		}
 		room.setContents(RoomObject.player);
 	}
@@ -89,6 +103,42 @@ public class GameWorld {
 
 	public void addPitInCavern(Room room) {
 		room.setContents(RoomObject.pit);
+	}
+
+	public void setWumpusLocation(Room room) {
+		Room currentLocation = whereIsWumpus();
+		if (currentLocation != null) {
+			currentLocation.clearContents();
+		}
+		room.setContents(RoomObject.wumpus);
+	}
+
+	public Room whereIsWumpus() {
+		for (Room r: rooms.values()) {
+			if (r.getContents() == RoomObject.wumpus) {
+				return r;
+			}
+		}
+		return null;
+	}
+
+	public void moveWumpus() {
+		Room wumpusLocation = whereIsWumpus();
+		if (wumpusLocation != null) {
+			int roomIndex = ((int) (Math.random() * 4.0)) + 1;
+			while (roomIndex > 0) {
+				for (Direction d: Direction.values()) {
+					Room peer = wumpusLocation.getPeer(d);
+					if (peer != null) {
+						roomIndex--;
+						if (roomIndex == 0) {
+							setWumpusLocation(peer);
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 
 }

@@ -33,6 +33,8 @@ public class GameDriver {
 			world.addPitInCavern(world.getRoom(cavernNumber));
 		} else if (gameObject.equalsIgnoreCase("bats")) {
 			world.addBatsInCavern(world.getRoom(cavernNumber));
+		} else if (gameObject.equalsIgnoreCase("wumpus")) {
+			world.setWumpusLocation(world.getRoom(cavernNumber));
 		}
 	}
 
@@ -71,6 +73,14 @@ public class GameDriver {
 		world = new GameWorld();
 		generator = new ProgrammableGenerator();
 		game = new Game(world, display, generator);
+	}
+
+	public void freezeWumpus(boolean frozen) {
+		if (frozen) {
+			game.freezeWumpus();
+		} else {
+			game.thawWumpus();
+		}
 	}
 
 }
