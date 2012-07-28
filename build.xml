@@ -40,11 +40,15 @@
 		</junit>
     </target>
 
+	<target name="compile_fitnesse" depends="compile" description="compile Fitnesse fixtures">
+		<javac srcdir="fitnesse" destdir="classes" classpathref="classpath" debug="true" source="1.6" target="1.6" includeantruntime="false"/>
+	</target>
+
     <target name="HTW" depends="compile" description="runs HTW">
         <java classpath="classes" classname="HuntTheWumpus.Runner" failonerror="true"/> 
     </target>
 
-	<target name="start_fitness" depends="unit_tests" description="starts fitness on port 8080">
+	<target name="start_fitness" depends="unit_tests,compile_fitnesse" description="starts fitness on port 8080">
 		<java  jar="fitnesse.jar" fork="true" failonerror="true">
 			<arg value="-p" />
 			<arg value="${fitnesse.port}" />
