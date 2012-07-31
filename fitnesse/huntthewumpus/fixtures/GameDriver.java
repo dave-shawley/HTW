@@ -2,6 +2,8 @@ package huntthewumpus.fixtures;
 
 import huntthewumpus.Game;
 import huntthewumpus.GameWorld;
+import huntthewumpus.Room;
+import huntthewumpus.RoomObject;
 
 
 public class GameDriver {
@@ -27,16 +29,17 @@ public class GameDriver {
 	}
 
 	public void putInCavern(String gameObject, int cavernNumber) {
+		Room room = world.getRoom(cavernNumber);
 		if (gameObject.equalsIgnoreCase("player")) {
-			world.setPlayerLocation(world.getRoom(cavernNumber));
-		} else if (gameObject.equalsIgnoreCase("pit")) {
-			world.addPitInCavern(world.getRoom(cavernNumber));
-		} else if (gameObject.equalsIgnoreCase("bats")) {
-			world.addBatsInCavern(world.getRoom(cavernNumber));
+			world.setPlayerLocation(room);
 		} else if (gameObject.equalsIgnoreCase("wumpus")) {
-			world.setWumpusLocation(world.getRoom(cavernNumber));
+			world.setWumpusLocation(room);
+		} else if (gameObject.equalsIgnoreCase("pit")) {
+			room.setContents(RoomObject.pit);
+		} else if (gameObject.equalsIgnoreCase("bats")) {
+			room.setContents(RoomObject.bats);
 		} else if (gameObject.equalsIgnoreCase("arrow")) {
-			world.getRoom(cavernNumber).addArrows(1);
+			room.addArrows(1);
 		}
 	}
 
@@ -77,6 +80,11 @@ public class GameDriver {
 		game = new Game(world, display, generator);
 	}
 
+	public void newGame() {
+		display.clearOutput();
+		game.reset();
+	}
+
 	public void freezeWumpus(boolean frozen) {
 		if (frozen) {
 			game.freezeWumpus();
@@ -86,11 +94,15 @@ public class GameDriver {
 	}
 
 	public void setQuiverTo(int count) {
+		world.addArrows(count);
 	}
 
 	public int arrowsInCavern(int cavernNumber) {
 		return world.getRoom(cavernNumber).getArrowCount();
 	}
 
+	public int arrowsInQuiver() {
+		return world.getArrowCount();
+	}
 }
 

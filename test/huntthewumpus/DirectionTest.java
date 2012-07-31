@@ -25,6 +25,16 @@ public class DirectionTest {
 	}
 
 	@Test
+	public void validateDirectionStringMatching() {
+		for (Direction dir: Direction.values()) {
+			assertThat(Direction.matchString(dir.name().toLowerCase()), is(dir));
+			assertThat(Direction.matchString(dir.longName().toLowerCase()), is(dir));
+			assertThat(Direction.matchString(dir.name().toUpperCase()), is(dir));
+			assertThat(Direction.matchString(dir.longName().toUpperCase()), is(dir));
+		}
+	}
+
+	@Test
 	public void coverageTests() {
 		TestHelper.testEnumerationMethods(Direction.class);
 	}

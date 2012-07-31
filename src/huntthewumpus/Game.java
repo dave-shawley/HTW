@@ -45,7 +45,12 @@ public class Game {
 			case SHOOT_WEST:
 			case SHOOT_SOUTH:
 			case SHOOT_NORTH:
-				display.showOutput("You don't have any arrows.");
+				if (world.getArrowCount() < 1) {
+					display.showOutput("You don't have any arrows.");
+				} else {
+					world.shootArrow(cmd.direction());
+					display.showOutput("The arrow flies away in silence.");
+				}
 				break;
 			}
 
@@ -72,6 +77,11 @@ public class Game {
 			return false;
 		}
 		return true;
+	}
+
+	public void reset() {
+		world.reset();
+		gameIsRunning = true;
 	}
 
 	public boolean hasTerminated() {

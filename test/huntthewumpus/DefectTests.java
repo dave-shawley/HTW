@@ -22,7 +22,7 @@ public class DefectTests {
 		w.connectRooms(w.getRoom(3), Direction.S, w.getRoom(8));
 		w.connectRooms(w.getRoom(8), Direction.S, w.getRoom(9));
 
-		w.addPitInCavern(w.getRoom(3));
+		w.getRoom(3).setContents(RoomObject.pit);
 
 		w.setPlayerLocation(w.getRoom(5));
 		w.movePlayer(Direction.W);

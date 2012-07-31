@@ -1,3 +1,4 @@
+|HuntTheWumpus.AllRequirements.IterationOne.ShootArrow.TestCanShootWhenThereAreArrows||22:29:43 Mon, Jul 30, 2012|
 |HuntTheWumpus.AllRequirements.IterationOne.NavigatePlayer.TestInvalidCommand||12:30:48 Sun, Jul 22, 2012|
 |HuntTheWumpus.AllRequirements.IterationOne.HearBats||17:15:38 Sat, Jul 21, 2012|
 |HuntTheWumpus.AllRequirements.IterationOne.BatTransportRandomly||10:13:07 Sat, Jul 21, 2012|

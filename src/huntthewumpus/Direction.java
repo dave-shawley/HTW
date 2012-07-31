@@ -23,5 +23,14 @@ public enum Direction {
 		throw new RuntimeException(this.toString() + " is an illegal Direction");
 	}
 
+	public static Direction matchString(String name) {
+		for (Direction d: Direction.values()) {
+			if (d.name().equalsIgnoreCase(name) || d.longName().equalsIgnoreCase(name)) {
+				return d;
+			}
+		}
+		return null;
+	}
+
 }
 

@@ -1,13 +1,14 @@
 package huntthewumpus.fixtures;
 
 import huntthewumpus.GameWorld;
+import huntthewumpus.RoomObject;
 
 
 public class CheckRandomBatTransport extends LocationCountingFixture {
 	public CheckRandomBatTransport() {
 		super();
 		GameWorld world = GameDriver.getWorld();
-		world.addBatsInCavern(world.getRoom(2));
+		world.getRoom(2).setContents(RoomObject.bats);
 		for (int i=0; i<1000; ++i) {
 			world.setPlayerLocation(world.getRoom(1));
 			GameDriver.executeCommand("E");

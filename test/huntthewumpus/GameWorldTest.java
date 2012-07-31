@@ -87,7 +87,7 @@ public class GameWorldTest {
 	@Test(expected=GameOver.class)
 	public void gameEndsWhenPlayerEntersRoomWithPit() throws Exception {
 		world.setPlayerLocation(centerRoom);
-		world.addPitInCavern(eastRoom);
+		eastRoom.setContents(RoomObject.pit);
 		world.movePlayer(Direction.E);
 	}
 
@@ -127,7 +127,7 @@ public class GameWorldTest {
 		Room batsRoom = world.getRoom(1);
 		world.connectRooms(playerRoom, Direction.S, batsRoom);
 		world.setPlayerLocation(playerRoom);
-		world.addBatsInCavern(batsRoom);
+		batsRoom.setContents(RoomObject.bats);
 		world.movePlayer(Direction.S);
 
 
@@ -175,4 +175,18 @@ public class GameWorldTest {
 		}
 	}
 
+	@Test
+	public void resetWorldClearsMap() {
+		world.setPlayerLocation(centerRoom);
+		world.setWumpusLocation(northRoom);
+		southRoom.setContents(RoomObject.pit);
+		eastRoom.setContents(RoomObject.bats);
+
+		world.reset();
+
+		assertThat(centerRoom.getContents(), is(RoomObject.empty));
+		assertThat(northRoom.getContents(), is(RoomObject.empty));
+		assertThat(southRoom.getContents(), is(RoomObject.empty));
+		assertThat(eastRoom.getContents(), is(RoomObject.empty));
+	}
 }

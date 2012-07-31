@@ -99,14 +99,6 @@ public class GameWorld {
 		room.setContents(RoomObject.player);
 	}
 
-	public void addBatsInCavern(Room room) {
-		room.setContents(RoomObject.bats);
-	}
-
-	public void addPitInCavern(Room room) {
-		room.setContents(RoomObject.pit);
-	}
-
 	public void setWumpusLocation(Room room) {
 		Room currentLocation = whereIsWumpus();
 		if (currentLocation != null) {
@@ -143,8 +135,35 @@ public class GameWorld {
 		}
 	}
 
+	public void addArrows(int numArrows) {
+		this.numArrows += numArrows;
+	}
+
 	public int getArrowCount() {
 		return numArrows;
 	}
 
+	public void shootArrow(Direction dir) throws GameOver {
+		Room startRoom = whereIsPlayer();
+		Room r = startRoom; // where the arrow currently is
+		Room lastRoom = r;  // where the arrow lands
+		while (r != null) {
+			if (r.getContents() == RoomObject.wumpus) {
+				throw new GameOver("You have killed the Wumpus.");
+			}
+			lastRoom = r;
+			r = r.getPeer(dir);
+		}
+		if (lastRoom == startRoom) {
+			throw new GameOver("The arrow bounced off the wall and killed you.");
+		}
+		lastRoom.addArrows(1);
+		--numArrows;
+	}
+
+	public void reset() {
+		for (Room r: rooms.values()) {
+			r.clearContents();
+		}
+	}
 }

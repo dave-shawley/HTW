@@ -50,10 +50,23 @@ public class CommandTest {
 
 	@Test
 	public void validateShootCommands() throws Exception {
-		verifyUpperAndLowerCase("shoot east", Command.SHOOT_EAST);
-		verifyUpperAndLowerCase("shoot west", Command.SHOOT_WEST);
-		verifyUpperAndLowerCase("shoot north", Command.SHOOT_NORTH);
-		verifyUpperAndLowerCase("shoot south", Command.SHOOT_SOUTH);
+		final Direction[] directions = { Direction.E, Direction.W, Direction.N, Direction.S };
+		final Command[] commands = { Command.SHOOT_EAST, Command.SHOOT_WEST, Command.SHOOT_NORTH, Command.SHOOT_SOUTH };
+
+		for (int index=0; index<directions.length; ++index) {
+			verifyUpperAndLowerCase(
+					"shoot " + directions[index].longName(),
+					commands[index]);
+			verifyUpperAndLowerCase(
+					"shoot " + directions[index].name(),
+					commands[index]);
+			verifyUpperAndLowerCase(
+					"s " + directions[index].name(),
+					commands[index]);
+			verifyUpperAndLowerCase(
+					"s" + directions[index].name(),
+					commands[index]);
+		}
 	}
 
 	@Test
@@ -70,6 +83,11 @@ public class CommandTest {
 		assertThat(Command.SHOOT_WEST.direction(), is(Direction.W));
 		assertThat(Command.SHOOT_NORTH.direction(), is(Direction.N));
 		assertThat(Command.SHOOT_SOUTH.direction(), is(Direction.S));
+	}
+
+	@Test(expected=UnknownCommand.class)
+	public void cannotShootInFakeDirection() throws Exception {
+		Command.fromInputString("shoot foo");
 	}
 
 	private void verifyUpperAndLowerCase(String value, Command expected) throws Exception {

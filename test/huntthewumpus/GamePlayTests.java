@@ -1,5 +1,6 @@
 package huntthewumpus;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -46,10 +47,39 @@ public class GamePlayTests {
 
 	@Test
 	public void playerCannotMoveIntoRoomWithBats() throws Exception {
-		world.addBatsInCavern(world.getRoom(EAST_ROOM));
+		world.getRoom(EAST_ROOM).setContents(RoomObject.bats);
 		world.movePlayer(Direction.E);
 		assertThat(world.whereIsPlayer(), is(not(nullValue())));
 		assertThat(world.whereIsPlayer(), is(not(world.getRoom(EAST_ROOM))));
+	}
+
+	@Test
+	public void arrowContinuesUntilItHitsAWall() throws Exception {
+		world.getRoom(WEST_ROOM).addArrows(10);
+		world.movePlayer(Direction.W); // will pick up 10 arrows
+		world.shootArrow(Direction.E);
+		assertThat(world.getRoom(EAST_ROOM).getArrowCount(), is(equalTo(1)));
+
+		world.movePlayer(Direction.E);
+		world.shootArrow(Direction.N);
+		assertThat(world.getRoom(FAR_NORTH_ROOM).getArrowCount(), is(equalTo(1)));
+
+		world.shootArrow(Direction.S);
+		assertThat(world.getRoom(SOUTH_ROOM).getArrowCount(), is(equalTo(1)));
+	}
+
+	@Test(expected=GameOver.class)
+	public void gameEndsIfPlayerShootsWallInSameRoom() throws Exception {
+		world.addArrows(5);
+		world.movePlayer(Direction.E);
+		world.shootArrow(Direction.E);
+	}
+
+	@Test(expected=GameOver.class)
+	public void wumpusDiesWhenHitWithArrow() throws Exception {
+		world.addArrows(1);
+		world.getRoom(NORTH_ROOM).setContents(RoomObject.wumpus);
+		world.shootArrow(Direction.N);
 	}
 
 

@@ -7,7 +7,7 @@ The quiver should have one less arrow.
 
 |script|
 |set quiver to|5|
-|put player in cavern|3|
+|put|player|in cavern|3|
 |enter command|shoot east|
 |check|message|The arrow flies away in silence.|was printed|true|
 |check|arrows in quiver|4|

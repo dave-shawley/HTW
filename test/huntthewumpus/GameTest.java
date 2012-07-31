@@ -4,7 +4,9 @@ import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import huntthewumpus.fixtures.ProgrammableGenerator;
@@ -85,7 +87,7 @@ public class GameTest {
 		Room playerRoom = g.world.whereIsPlayer();
 		Room pitRoom = g.world.getRoom(1);
 		g.world.connectRooms(playerRoom, Direction.E, pitRoom);
-		g.world.addPitInCavern(pitRoom);
+		pitRoom.setContents(RoomObject.pit);
 
 		g.tick();
 		assertTrue(g.display.lineWasDisplayed("You fall into a pit and die."));
@@ -101,7 +103,7 @@ public class GameTest {
 		g.world.connectRooms(playerRoom, Direction.E, g.world.getRoom(1));
 		g.world.connectRooms(g.world.getRoom(1), Direction.E, batRoom);
 		g.world.setPlayerLocation(playerRoom);
-		g.world.addBatsInCavern(batRoom);
+		batRoom.setContents(RoomObject.bats);
 
 		g.tick();
 		assertTrue(g.display.lineWasDisplayed("You hear chirping."));
@@ -111,11 +113,11 @@ public class GameTest {
 	public void playerHearsPit() {
 		GameBundle g = GameBundle.forInput("E");
 		Room playerRoom = g.world.getRoom(0);
-		Room batRoom = g.world.getRoom(2);
+		Room pitRoom = g.world.getRoom(2);
 		g.world.connectRooms(playerRoom, Direction.E, g.world.getRoom(1));
-		g.world.connectRooms(g.world.getRoom(1), Direction.E, batRoom);
+		g.world.connectRooms(g.world.getRoom(1), Direction.E, pitRoom);
 		g.world.setPlayerLocation(playerRoom);
-		g.world.addPitInCavern(batRoom);
+		pitRoom.setContents(RoomObject.pit);
 
 		g.tick();
 		assertTrue(g.display.lineWasDisplayed("You hear wind."));
@@ -303,6 +305,50 @@ public class GameTest {
 		}
 	}
 
+	@Test
+	public void arrowsMakeNoise() throws Exception {
+		GameBundle g = GameBundle.withPlayerInRoom(0);
+		g.world.connectRooms(g.world.getRoom(0), Direction.E, g.world.getRoom(1));
+		g.world.connectRooms(g.world.getRoom(0), Direction.W, g.world.getRoom(2));
+		g.world.addArrows(1);
+		g.doCommand("shoot east");
+		assertTrue(g.display.lineWasDisplayed("The arrow flies away in silence."));
+	}
+
+	@Test
+	public void gameEndsWhenPlayerShootsWall() throws Exception {
+		GameBundle g = GameBundle.withPlayerInRoom(0);
+		g.world.addArrows(1);
+		g.doCommand("shoot east");
+		assertTrue(g.display.lineWasDisplayed("The arrow bounced off the wall and killed you."));
+		assertTrue(g.hasTerminated());
+	}
+
+	@Test
+	public void gameEndsWhenPlayerKillsWumpus() {
+		GameBundle g = GameBundle.withPlayerInRoom(0);
+		g.world.connectRooms(g.world.whereIsPlayer(), Direction.N, g.world.getRoom(1));
+		g.world.getRoom(1).setContents(RoomObject.wumpus);
+		g.world.addArrows(1);
+		g.doCommand("shoot north");
+		assertTrue(g.display.lineWasDisplayed("You have killed the Wumpus."));
+		assertTrue(g.hasTerminated());
+	}
+
+	@Test
+	public void gameCanBeReset() {
+		GameBundle g = GameBundle.withPlayerInRoom(0);
+		g.world.connectRooms(g.world.whereIsPlayer(), Direction.N, g.world.getRoom(1));
+		g.world.getRoom(1).setContents(RoomObject.wumpus);
+		g.world.addArrows(1);
+		g.doCommand("shoot north");
+		assertTrue(g.hasTerminated());
+
+		g.reset();
+		assertFalse(g.hasTerminated());
+		assertThat(g.world.whereIsPlayer(), is(nullValue()));
+		assertThat(g.world.whereIsWumpus(), is(nullValue()));
+	}
 
 	/**
 	 * Create a cross map with the wumpus in the center and the player two
