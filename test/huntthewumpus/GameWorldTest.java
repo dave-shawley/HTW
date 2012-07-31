@@ -59,6 +59,16 @@ public class GameWorldTest {
 	}
 
 	@Test
+	public void playerPicksUpArrows() throws Exception {
+		world.setPlayerLocation(centerRoom);
+		northRoom.addArrows(1);
+		assertThat(world.getArrowCount(), is(0));
+		world.movePlayer(Direction.N);
+		assertThat(world.getArrowCount(), is(1));
+		assertThat(northRoom.containsArrows(), is(false));
+	}
+
+	@Test
 	public void whereIsWumpusReturnsNullWithoutWumpus() {
 		assertThat(world.whereIsWumpus(), is(nullValue()));
 	}
@@ -141,6 +151,10 @@ public class GameWorldTest {
 
 	@Test
 	public void moveWumpusChoosesNewLocationAtRandom() {
+		// The wumpus is supposed to move into a random adjacent room with
+		// every clock tick.  Since we are dealing with "random" here, the test
+		// runs for a bunch of ticks and keeps track of which room the wumpus
+		// moved to.  We should see that the wumpus visited each peer room.
 		int[] counters = new int[6];
 		for (int i=0; i<100; ++i) {
 			world.setWumpusLocation(world.getRoom(2));

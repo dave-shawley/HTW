@@ -1,13 +1,48 @@
 package huntthewumpus;
 
 public enum Command {
-	MOVE_EAST, MOVE_SOUTH, MOVE_NORTH, MOVE_WEST, REST;
+
+	REST,
+	MOVE_EAST(Direction.E),
+	MOVE_SOUTH(Direction.S),
+	MOVE_NORTH(Direction.N),
+	MOVE_WEST(Direction.W),
+	SHOOT_EAST(Direction.E),
+	SHOOT_WEST(Direction.W),
+	SHOOT_NORTH(Direction.N),
+	SHOOT_SOUTH(Direction.S);
+
+
+	final private Direction direction;
+
+	private Command() {
+		this(null);
+	}
+
+	private Command(Direction associatedDirection) {
+		direction = associatedDirection;
+	}
 
 	public static Command fromInputString(String input) throws UnknownCommand {
 		input = input.toLowerCase();
 
 		if (input.equals("rest") || input.equals("r")) {
 			return REST;
+		}
+
+		if (input.startsWith("shoot ")) {
+			input = input.substring("shoot ".length());
+			for (Direction d: Direction.values()) {
+				if (d.toString().equalsIgnoreCase(input) || d.longName().equalsIgnoreCase(input)) {
+					switch (d) {
+					case E: return SHOOT_EAST;
+					case W: return SHOOT_WEST;
+					case N: return SHOOT_NORTH;
+					case S: return SHOOT_SOUTH;
+					}
+				}
+			}
+			throw new UnknownCommand(input);
 		}
 
 		if (input.startsWith("go ")) {
@@ -27,6 +62,10 @@ public enum Command {
 		}
 
 		throw new UnknownCommand(input);
+	}
+
+	public Direction direction() {
+		return this.direction;
 	}
 
 }

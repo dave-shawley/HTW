@@ -35,6 +35,8 @@ public class GameDriver {
 			world.addBatsInCavern(world.getRoom(cavernNumber));
 		} else if (gameObject.equalsIgnoreCase("wumpus")) {
 			world.setWumpusLocation(world.getRoom(cavernNumber));
+		} else if (gameObject.equalsIgnoreCase("arrow")) {
+			world.getRoom(cavernNumber).addArrows(1);
 		}
 	}
 
@@ -81,6 +83,13 @@ public class GameDriver {
 		} else {
 			game.thawWumpus();
 		}
+	}
+
+	public void setQuiverTo(int count) {
+	}
+
+	public int arrowsInCavern(int cavernNumber) {
+		return world.getRoom(cavernNumber).getArrowCount();
 	}
 
 }

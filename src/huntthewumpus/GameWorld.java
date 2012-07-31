@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class GameWorld {
 	private final Map<Integer, Room> rooms = new HashMap<Integer, Room>();
+	private int numArrows = 0;
 
 	public Room getRoom(int room) {
 		Integer roomNumber = Integer.valueOf(room);
@@ -41,6 +42,7 @@ public class GameWorld {
 		if (nextRoom != currentLocation) {
 			nextRoom.setContents(RoomObject.player);
 			currentLocation.clearContents();
+			numArrows += nextRoom.takeArrows();
 		}
 	}
 
@@ -139,6 +141,10 @@ public class GameWorld {
 				}
 			}
 		}
+	}
+
+	public int getArrowCount() {
+		return numArrows;
 	}
 
 }

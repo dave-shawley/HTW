@@ -1,5 +1,6 @@
 package huntthewumpus;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
@@ -54,6 +55,22 @@ public class RoomTest {
 	public void roomIsEmptyByDefault() {
 		Room r = new Room(42);
 		assertThat(r.getContents(), is(RoomObject.empty));
+		assertThat(r.containsArrows(), is(false));
 	}
 
+	@Test
+	public void roomCanContainArrows() {
+		Room r = new Room(0);
+		r.addArrows(12);
+		assertThat(r.containsArrows(), is(true));
+		assertThat(r.getArrowCount(), is(equalTo(12)));
+	}
+
+	@Test
+	public void takeArrowsRemovesAllArrows() {
+		Room r = new Room(0);
+		r.addArrows(12);
+		assertThat(r.takeArrows(), is(equalTo(12)));
+		assertThat(r.containsArrows(), is(false));
+	}
 }

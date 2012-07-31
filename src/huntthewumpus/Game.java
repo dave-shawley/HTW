@@ -32,18 +32,20 @@ public class Game {
 
 	public boolean tick() {
 		try {
-			switch (generator.getNextCommand()) {
+			int startingArrowCount = world.getArrowCount();
+			Command cmd = generator.getNextCommand();
+			switch (cmd) {
 			case MOVE_EAST:
-				world.movePlayer(Direction.E);
-				break;
 			case MOVE_WEST:
-				world.movePlayer(Direction.W);
-				break;
 			case MOVE_NORTH:
-				world.movePlayer(Direction.N);
-				break;
 			case MOVE_SOUTH:
-				world.movePlayer(Direction.S);
+				world.movePlayer(cmd.direction());
+				break;
+			case SHOOT_EAST:
+			case SHOOT_WEST:
+			case SHOOT_SOUTH:
+			case SHOOT_NORTH:
+				display.showOutput("You don't have any arrows.");
 				break;
 			}
 
@@ -51,6 +53,10 @@ public class Game {
 
 			Room currentLocation = world.whereIsPlayer();
 			if (currentLocation != null) {
+				if (world.getArrowCount() > startingArrowCount) {
+					display.showOutput("You found an arrow.");
+				}
+				printQuiverSize();
 				printSounds(currentLocation);
 				printSmells(currentLocation);
 				printDirections(currentLocation);
@@ -138,4 +144,13 @@ public class Game {
 		}
 	}
 
+	private void printQuiverSize() {
+		int arrowCount = world.getArrowCount();
+		if (arrowCount > 0) {
+			display.showOutput(String.format("You have %d arrow%s.",
+					arrowCount, (arrowCount > 1) ? "s": ""));
+		} else {
+			display.showOutput("You have no arrows.");
+		}
+	}
 }

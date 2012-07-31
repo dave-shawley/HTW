@@ -7,12 +7,14 @@ public class Room {
 	private final int roomNumber;
 	private final Map<Direction, Room> peerMap;
 	private RoomObject content;
+	private int numArrows;
 
 
 	public Room(int roomNumber) {
 		this.roomNumber = roomNumber;
 		this.peerMap = new HashMap<Direction, Room>();
 		this.content = RoomObject.empty;
+		this.numArrows = 0;
 	}
 
 	public int getRoomNumber() {
@@ -37,6 +39,24 @@ public class Room {
 
 	public RoomObject getContents() {
 		return content;
+	}
+
+	public void addArrows(int numArrows) {
+		this.numArrows += numArrows;
+	}
+
+	public boolean containsArrows() {
+		return numArrows > 0;
+	}
+
+	public int getArrowCount() {
+		return numArrows;
+	}
+
+	public int takeArrows() {
+		int arrows = numArrows;
+		numArrows = 0;
+		return arrows;
 	}
 
 	@Override

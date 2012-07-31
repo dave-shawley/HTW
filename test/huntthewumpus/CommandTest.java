@@ -48,6 +48,30 @@ public class CommandTest {
 		TestHelper.testEnumerationMethods(Command.class);
 	}
 
+	@Test
+	public void validateShootCommands() throws Exception {
+		verifyUpperAndLowerCase("shoot east", Command.SHOOT_EAST);
+		verifyUpperAndLowerCase("shoot west", Command.SHOOT_WEST);
+		verifyUpperAndLowerCase("shoot north", Command.SHOOT_NORTH);
+		verifyUpperAndLowerCase("shoot south", Command.SHOOT_SOUTH);
+	}
+
+	@Test
+	public void moveCommandsHaveDirection() {
+		assertThat(Command.MOVE_EAST.direction(), is(Direction.E));
+		assertThat(Command.MOVE_WEST.direction(), is(Direction.W));
+		assertThat(Command.MOVE_NORTH.direction(), is(Direction.N));
+		assertThat(Command.MOVE_SOUTH.direction(), is(Direction.S));
+	}
+
+	@Test
+	public void shootCommandsHaveDirection() {
+		assertThat(Command.SHOOT_EAST.direction(), is(Direction.E));
+		assertThat(Command.SHOOT_WEST.direction(), is(Direction.W));
+		assertThat(Command.SHOOT_NORTH.direction(), is(Direction.N));
+		assertThat(Command.SHOOT_SOUTH.direction(), is(Direction.S));
+	}
+
 	private void verifyUpperAndLowerCase(String value, Command expected) throws Exception {
 		assertThat(Command.fromInputString(value), is(equalTo(expected)));
 		assertThat(Command.fromInputString(value.toLowerCase()), is(equalTo(expected)));

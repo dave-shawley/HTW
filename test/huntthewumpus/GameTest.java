@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import huntthewumpus.fixtures.ProgrammableGenerator;
 import huntthewumpus.fixtures.RecordingGameDisplay;
 
@@ -87,9 +88,9 @@ public class GameTest {
 		g.world.addPitInCavern(pitRoom);
 
 		g.tick();
-		assertThat(g.display.getOutputLine(0), is(equalTo("You fall into a pit and die.")));
-		assertThat(g.display.getOutputLine(1), is(equalTo("Game over.")));
-		assertThat(g.hasTerminated(), is(true));
+		assertTrue(g.display.lineWasDisplayed("You fall into a pit and die."));
+		assertTrue(g.display.lineWasDisplayed("Game over."));
+		assertTrue(g.hasTerminated());
 	}
 
 	@Test
@@ -103,7 +104,7 @@ public class GameTest {
 		g.world.addBatsInCavern(batRoom);
 
 		g.tick();
-		assertThat(g.display.getOutputLine(0), is(equalTo("You hear chirping.")));
+		assertTrue(g.display.lineWasDisplayed("You hear chirping."));
 	}
 
 	@Test
@@ -117,27 +118,45 @@ public class GameTest {
 		g.world.addPitInCavern(batRoom);
 
 		g.tick();
-		assertThat(g.display.getOutputLine(0), is(equalTo("You hear wind.")));
+		assertTrue(g.display.lineWasDisplayed("You hear wind."));
 	}
 
 	@Test
 	public void playerWarnedOnInvalidMove() {
-		GameBundle g = GameBundle.forInput("E", "W", "N", "S");
-		g.tick();
-		g.tick();
-		g.tick();
-		g.tick();
-		assertThat(g.display.getOutputLine(0), is(equalTo("You can't go east from here.")));
-		assertThat(g.display.getOutputLine(1), is(equalTo("You can't go west from here.")));
-		assertThat(g.display.getOutputLine(2), is(equalTo("You can't go north from here.")));
-		assertThat(g.display.getOutputLine(3), is(equalTo("You can't go south from here.")));
+		GameBundle g = GameBundle.withPlayerInRoom(0);
+		g.doCommand("E");
+		assertTrue(g.display.lineWasDisplayed("You can't go east from here."));
+		g.doCommand("W");
+		assertTrue(g.display.lineWasDisplayed("You can't go west from here."));
+		g.doCommand("N");
+		assertTrue(g.display.lineWasDisplayed("You can't go north from here."));
+		g.doCommand("S");
+		assertTrue(g.display.lineWasDisplayed("You can't go south from here."));
 	}
 
 	@Test
 	public void playerCanRest() {
-		GameBundle g = GameBundle.forInput("rest", "R");
-		g.tick();
-		g.tick();
+		GameBundle g = GameBundle.withPlayerInRoom(0);
+		g.doCommand("rest");
+		g.doCommand("r");
+	}
+
+	@Test
+	public void playerRemindedOfArrowCount() {
+		GameBundle g = GameBundle.withPlayerInRoom(0);
+		g.world.connectRooms(g.world.getRoom(0), Direction.N, g.world.getRoom(1));
+		g.world.getRoom(1).addArrows(1);
+		g.world.connectRooms(g.world.getRoom(1), Direction.N, g.world.getRoom(2));
+		g.world.getRoom(2).addArrows(1);
+
+		g.doCommand("rest");
+		assertTrue(g.display.lineWasDisplayed("You have no arrows."));
+		g.doCommand("north");
+		assertTrue(g.display.lineWasDisplayed("You found an arrow."));
+		assertTrue(g.display.lineWasDisplayed("You have 1 arrow."));
+		g.doCommand("north");
+		assertTrue(g.display.lineWasDisplayed("You found an arrow."));
+		assertTrue(g.display.lineWasDisplayed("You have 2 arrows."));
 	}
 
 	@Test
@@ -155,33 +174,33 @@ public class GameTest {
 	@Test
 	public void unknownCommandsDisplayErrorMessage() {
 		String randomInputValue = UUID.randomUUID().toString();
-		GameBundle g = GameBundle.forInput(randomInputValue);
-		g.tick();
-		assertThat(g.display.getOutputLine(0),
-				is(equalTo(String.format("I don't know how to %s.", randomInputValue))));
+		GameBundle g = GameBundle.withPlayerInRoom(0);
+		g.doCommand(randomInputValue);
+		assertTrue(g.display.lineWasDisplayed(String.format("I don't know how to %s.", randomInputValue)));
 	}
 
 	@Test
 	public void directionsAreReportedAfterResting() {
 		GameBundle g = GameBundle.withPlayerInRoom(0);
-		g.doCommand("rest");
-		assertThat(g.display.getDisplayedOutput().isEmpty(), is(true));
+		// TODO is this required?
+//		g.doCommand("rest");
+//		assertTrue(g.display.getDisplayedOutput().isEmpty());
 
 		g.world.connectRooms(g.world.getRoom(0), Direction.N, g.world.getRoom(1));
 		g.doCommand("rest");
-		assertThat(g.display.popDisplayedOutput(), is(equalTo("You can go north from here.")));
+		assertTrue(g.display.lineWasDisplayed("You can go north from here."));
 
 		g.world.connectRooms(g.world.getRoom(0), Direction.E, g.world.getRoom(2));
 		g.doCommand("rest");
-		assertThat(g.display.popDisplayedOutput(), is(equalTo("You can go north and east from here.")));
+		assertTrue(g.display.lineWasDisplayed("You can go north and east from here."));
 
 		g.world.connectRooms(g.world.getRoom(0), Direction.S, g.world.getRoom(3));
 		g.doCommand("rest");
-		assertThat(g.display.popDisplayedOutput(), is(equalTo("You can go north, south and east from here.")));
+		assertTrue(g.display.lineWasDisplayed("You can go north, south and east from here."));
 
 		g.world.connectRooms(g.world.getRoom(0), Direction.W, g.world.getRoom(4));
 		g.doCommand("rest");
-		assertThat(g.display.popDisplayedOutput(), is(equalTo("You can go north, south, east and west from here.")));
+		assertTrue(g.display.lineWasDisplayed("You can go north, south, east and west from here."));
 	}
 
 	@Test(timeout=10)
@@ -193,7 +212,7 @@ public class GameTest {
 		g.world.setWumpusLocation(wumpusRoom);
 
 		waitForWumpusToMove(g);
-		assertThat(g.display.lineWasDisplayed("You smell the Wumpus."), is(true));
+		assertTrue(g.display.lineWasDisplayed("You smell the Wumpus."));
 	}
 
 	@Test(timeout=10) @SuppressWarnings("unchecked")
@@ -257,19 +276,47 @@ public class GameTest {
 			Room endLocation = g.world.whereIsWumpus();
 			wumpusHasSlept = startLocation.getRoomNumber() == endLocation.getRoomNumber();
 		}
-		assertThat(wumpusHasSlept, is(true));
+		assertTrue(wumpusHasSlept);
 	}
 
+	@Test
+	public void playerNotifiedWhenAnArrowIsPickedUp() {
+		GameBundle g = GameBundle.withPlayerInRoom(0);
+		g.world.connectRooms(g.world.getRoom(0), Direction.N, g.world.getRoom(1));
+		g.world.getRoom(1).addArrows(12);
+		g.doCommand("N");
+		assertTrue(g.display.lineWasDisplayed("You found an arrow."));
+	}
+
+	@Test
+	public void playerCannotShootWithoutArrows() {
+		GameBundle g = GameBundle.withPlayerInRoom(0);
+		g.world.connectRooms(g.world.getRoom(0), Direction.E, g.world.getRoom(1));
+		g.world.connectRooms(g.world.getRoom(0), Direction.W, g.world.getRoom(2));
+		g.world.connectRooms(g.world.getRoom(0), Direction.N, g.world.getRoom(3));
+		g.world.connectRooms(g.world.getRoom(0), Direction.S, g.world.getRoom(4));
+		for (Direction d: Direction.values()) {
+			g.doCommand("shoot " + d.longName());
+			assertTrue("failed to shoot " + d.longName(),
+					g.display.lineWasDisplayed("You don't have any arrows."));
+			g.display.clearOutput();
+		}
+	}
+
+
+	/**
+	 * Create a cross map with the wumpus in the center and the player two
+	 * rooms away.  After resting, the wumpus should be in one of the
+	 * adjacent rooms.  Run this a few times to be semi, sorta, sure or call
+	 * {@link #waitForWumpusToMove(GameBundle)} to be really sure.
+	 * <pre>
+	 *      [4]
+	 *   [1][2][3]  <-- wumpus in room 2
+	 *      [5]
+	 *      [0] <-- player here
+	 * </pre>
+	 */
 	private Room createWumpusMap(GameBundle g) {
-		// Create a cross map with the wumpus in the center and the player two
-		// rooms away.  After resting, the wumpus should be in one of the
-		// adjacent rooms.  Run this a few times to be semi, sorta, sure.
-		//
-		//      [4]
-		//   [1][2][3]  <-- wumpus in room 2
-		//      [5]
-		//      [0] <-- player here
-		//
 		Room playerRoom = g.world.whereIsPlayer();
 		Room wumpusRoom = g.world.getRoom(2);
 		g.world.connectRooms(playerRoom, Direction.N, g.world.getRoom(5));
@@ -280,6 +327,10 @@ public class GameTest {
 		return wumpusRoom;
 	}
 
+	/**
+	 * The wumpus is free to rest from time to time.  Call this method to keep
+	 * ticking until it stops being so lazy.
+	 */
 	private void waitForWumpusToMove(GameBundle g) {
 		do {
 			g.doCommand("rest");
